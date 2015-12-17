@@ -12,19 +12,20 @@ Bools are `true` and `false`.
 
 All operators are infix operators unless otherwise specified.
 
-**(+) (-) (/) (*)**   
-Arithmetic operators take two Num expressions and return another. In the case of division by zero, it will instead return an error value.
+<dl>
+  <dt>( + ) ( - ) ( / ) ( * )</dt>
+  <dd>Arithmetic operators take two Num expressions and return another. In the case of division by zero, it will instead return an error value.</dd>
 
-**(&&) (||)**   
-Boolean operators take two Bool expressions and return a third. They are not bitwise operators.
+  <dt>(&&) (||)</dt>
+  <dd>Boolean operators take two Bool expressions and return a third. They are not bitwise operators.</dd>
 
-**(>) (<) (>=) (<=) (=>) (=<)**   
-Comparison operaturs take two Num expressions and return a Bool. Note that `>=` and `=>` are the same, as are `<=` and `=<`.
+  <dt>(>) (<) (>=) (<=) (=>) (=<)</dt>
+  <dd>Comparison operaturs take two Num expressions and return a Bool. Note that >= and => are the same, as are <= and =<.</dd>
 
-**(==)**   
-The equality operator takes any two expressions and returns a Bool that represents whether or not they are functionally equivalent. In Num expressions, equality does not differentiate between different expressions of the same number (e.g. 1==1.0).
+  <dt>(==)</dt>
+  <dd>The equality operator takes any two expressions and returns a Bool that represents whether or not they are functionally equivalent. In Num expressions, equality does not differentiate between different expressions of the same number (e.g. 1==1.0).
 
-For other uses of `==`, see that section of the documentation.
+  For other uses of `==`, see that section of the documentation.</dd>
 
 ## If Statements
 
