@@ -29,6 +29,7 @@ All operators are infix operators unless otherwise specified. They are also all 
 
   <dt>! not</dt>
   <dd>Not operators take a Bool expression and return the opposite. They are not infix.</dd>
+</dl>
 
 ## If Statements
 
