@@ -5,13 +5,30 @@ true==true //Basic
 false==false //Basic
 (true==false)==false //Basic
 (false==true)==false //Basic
-[]==[] //Basic
+1>0 //Basic
+1>=0 //Basic
+1>=1 //Basic
+1=>1 //Basic
+0<1 //Basic
+0<=1 //Basic
+0<=0 //Basic
+0=<0 //Basic
+(1>2)==false //Basic
+(1>=2)==false //Basic
+(2<1)==false //Basic
+(2<=1)==false //Basic
 [1,2]==[1,2] //Basic
-null? [] //Basic
-(null? [1])==false //Basic
+(1:[])==[1] //Basic
+[]==[] //Basic
+null? [] //Basic, should be the same as []==[]
+(null? [1])==false //Basic, should be the same as [1]==[]
+(head [1,2])==1 //Basic
+(tail [1,2])==[2] //Basic
+(fst (1,2))==1 //Basic
+(snd (1,2))==2 //Basic
 let f = 1 in f==f //Basic
 let f = (\x -> x) in (f 0,f true) == (0,true) //Tests polymorphism
-let f = (\x -> x) in let g = f in (g 0,g true) == (0,true) //Second let statement doesn't resolve the polymorphic function too early
+let f = (\x -> x) in let g = f in (g 0,g true) == (0,true) //Second let statement resolves the polymorphic function, but then makes it polymorphic again
 snd fst ((false,true),false) == true //Makes sure that fst & snd are right-associative
 let f = (\i -> true) in if f 0 then true else false == true //Basic
 ((\x -> x-1) 2)==1 == true //Basic
