@@ -8,7 +8,7 @@ let digit = ['0'-'9']
 let sign = ['+' '-']
 let frac = '.' digit+
 let exp = ['e' 'E'] sign? digit+
-let white = [' ' '\t']+ | "\\\n"
+let white = [' ' '\t']+ | "\\\n" | "//" ([^ '\n' '\r'])*
 let newline = '\n' | '\r' | "\r\n"
 let letter = ['a'-'z' 'A'-'Z']
 let alphanum = letter | digit
@@ -43,7 +43,6 @@ let tail = "tail"
 let cons = ":"
 let null = "null?"
 let id = letter alphanum*
-
 let any = _
 
 rule token = parse

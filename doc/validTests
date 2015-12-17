@@ -1,19 +1,22 @@
-1==1
-1.0==1
-(1.1==1)==false
-true==true
-false==false
-(true==false)==false
-(false==true)==false
-[]==[]
-let f = 1 in f==f
-let f = (\x -> x) in (f 0,f true) == (0,true)
-let f = (\x -> x) in let g = f in (g 0,g true) == (0,true)
-snd fst ((false,true),false) == true
-let f = (\i -> true) in if f 0 then true else false == true
-((\x -> x-1) 2)==1 == true
-((\x -> x+1)==(\x -> x+1))==false
-let map = (\f l -> if null? l then [] else (f (head l)):(map f (tail l))) in (map (\x -> x+1) [0,0,0])==[1,1,1]
-let map = (\f l -> if null? l then [] else (f (head l)):(map f (tail l))) in (map (\x -> x+1) [])==[]
-let filter = (\f l -> if null? l then [] else if f (head l) then (head l):(filter f (tail l)) else filter f (tail l)) in (filter (\x -> x>0) [0,1,0,1])==[1,1]
-let fold = (\f acc l -> if null? l then acc else fold f (f acc (head l)) (tail l)) in (fold (\x y -> x+y) 0 [1,1,1])==3
+1==1 //Basic
+1.0==1 //All numbers are floats, and the .0 is assumed if not given
+(1.1==1)==false //Basic
+true==true //Basic
+false==false //Basic
+(true==false)==false //Basic
+(false==true)==false //Basic
+[]==[] //Basic
+[1,2]==[1,2] //Basic
+null? [] //Basic
+(null? [1])==false //Basic
+let f = 1 in f==f //Basic
+let f = (\x -> x) in (f 0,f true) == (0,true) //Tests polymorphism
+let f = (\x -> x) in let g = f in (g 0,g true) == (0,true) //Second let statement doesn't resolve the polymorphic function too early
+snd fst ((false,true),false) == true //Makes sure that fst & snd are right-associative
+let f = (\i -> true) in if f 0 then true else false == true //Basic
+((\x -> x-1) 2)==1 == true //Basic
+((\x -> x+1)==(\x -> x+1))==false //Functions are never equal to one another
+(let f = (\x -> x+1) in f==f)==false //Functions are NEVER equal to one another
+let map = (\f l -> if null? l then [] else (f (head l)):(map f (tail l))) in (map (\x -> x+1) [0,0,0])==[1,1,1] //Map can be made
+let filter = (\f l -> if null? l then [] else if f (head l) then (head l):(filter f (tail l)) else filter f (tail l)) in (filter (\x -> x>0) [0,1,0,1])==[1,1] //Filter can be made
+let fold = (\f acc l -> if null? l then acc else fold f (f acc (head l)) (tail l)) in (fold (\x y -> x+y) 0 [1,1,1])==3 //Fold can be made
