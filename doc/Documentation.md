@@ -59,10 +59,10 @@ Lists are sequences of elements which must all be of the same type. They are of 
   <dd>Returns everything but the first element of a list. If given an empty list, will return the empty list.</dd>
 
   <dt>null?</dt>
-  <dd>Returns true if the list is empty and false otherwise. Note that the parser translates `null? foo` as `foo==[]`.</dd>
+  <dd>Returns true if the list is empty and false otherwise. Note that the parser translates <code>null? foo</code> as <code>foo==[]</code>.</dd>
 
   <dt>( : )</dt>
-  <dd>Takes an value of type `t` and a `t` list, and prepends the value to the list. Infix operator.</dd>
+  <dd>Takes an value of type <code>t</code> and a <code>t</code> list, and prepends the value to the list. Infix operator.</dd>
 
   <dt>( == )</dt>
   <dd>Two lists are equivalent if they have all the same elements, in the same order.</dd>
