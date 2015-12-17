@@ -1,0 +1,4 @@
+1==true
+(\f -> (f 0,f true)) (\x -> x)
+let f = (\p -> p+1) in f true
+let x = (\f -> f x) in x (\i -> i)

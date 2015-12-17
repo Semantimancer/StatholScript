@@ -471,31 +471,5 @@ let evaluate exprS = let exprC = desugar exprS
     * (\f -> (f 0,f true)) (\x -> x) == TYPECHECK ERROR
     * let f = (\p -> p+1) in f true == TYPECHECK ERROR
     * let x = (\f -> f x) in x (\i -> i) == SELF-REFERENTIAL ERROR
-    * let f = (\x -> x) in (f 0,f true) == (0,true)
-    * let f = (\x -> x) in let g = f in (g 0,g true) == (0,true)
-    * snd fst ((false,true),false) == true (shows that fst/snd are right-associative)
-    * let f = (\i -> true) in if f 0 then true else false == true (shows that if is RA)
     * 1==true == TYPECHECK ERROR
-    * 1==1 == true
-    * 1.0==1 == true
-    * 1.1==1 == false
-    * true==true == true
-    * false==false == true
-    * true==false == false
-    * false==true == false
-    * let f = 1 in f==f
-    * ((\x -> x-1) 2)==1 == true
-    * (\x -> x+1)==(\x -> x+1) == false
-    * You can implement higher-order functions:
-      * MAP: let map = (\f l -> if null? l then [] else (f (head l)):(map f (tail l)))
-      * FILTER: let filter = (\f l -> if null? l
-                                      then []
-                                      else if f (head l)
-                                           then (head l):(filter f (tail l))
-                                           else filter f (tail l))
-      * FOLD: let fold = (\f acc l -> if null? l
-                                      then acc
-                                      else fold f (f acc (head l)) (tail l))
-    * 
-
 *)

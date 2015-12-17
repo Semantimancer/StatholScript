@@ -1,0 +1,19 @@
+1==1
+1.0==1
+(1.1==1)==false
+true==true
+false==false
+(true==false)==false
+(false==true)==false
+[]==[]
+let f = 1 in f==f
+let f = (\x -> x) in (f 0,f true) == (0,true)
+let f = (\x -> x) in let g = f in (g 0,g true) == (0,true)
+snd fst ((false,true),false) == true
+let f = (\i -> true) in if f 0 then true else false == true
+((\x -> x-1) 2)==1 == true
+((\x -> x+1)==(\x -> x+1))==false
+let map = (\f l -> if null? l then [] else (f (head l)):(map f (tail l))) in (map (\x -> x+1) [0,0,0])==[1,1,1]
+let map = (\f l -> if null? l then [] else (f (head l)):(map f (tail l))) in (map (\x -> x+1) [])==[]
+let filter = (\f l -> if null? l then [] else if f (head l) then (head l):(filter f (tail l)) else filter f (tail l)) in (filter (\x -> x>0) [0,1,0,1])==[1,1]
+let fold = (\f acc l -> if null? l then acc else fold f (f acc (head l)) (tail l)) in (fold (\x y -> x+y) 0 [1,1,1])==3
