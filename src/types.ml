@@ -466,10 +466,4 @@ let evaluate exprS = let exprC = desugar exprS
 
   PROBLEMS:
     * let f p = fst p + snd p in f (true,true) TYPECHECKS
-
-  TESTS
-    * (\f -> (f 0,f true)) (\x -> x) == TYPECHECK ERROR
-    * let f = (\p -> p+1) in f true == TYPECHECK ERROR
-    * let x = (\f -> f x) in x (\i -> i) == SELF-REFERENTIAL ERROR
-    * 1==true == TYPECHECK ERROR
 *)
