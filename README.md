@@ -5,7 +5,7 @@ Study at Hanover College. It was made with functional programming techniques in 
 
 ## Testing
 
-Clone the repository and navigate to the source folder, then run the commands
+Clone the repository and navigate to the `StatholScript/src` folder, then run the commands
 
      ./make
      ./lang < ../doc/validTests
