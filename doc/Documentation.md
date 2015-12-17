@@ -79,6 +79,8 @@ Lists are sequences of elements which must all be of the same type. They are of 
 
 The standard way to define a function is as an anonymous (lambda) function, which takes the form `(\foo -> bar)`. The parentheses are required. Immediately after the `\` is the list of parameters, followed by a `->` and then the expression itself.    
 
+Parameters to a function are treated individually, and are interpreted before they are passed to the function. They can be of any value, including Closure, so it is possible to pass functions to other functions.
+
 Function definitions on their own return a Closure value, and are expressed by the typechecker as `(foo -> bar)`. 
 
 <dl>
@@ -112,6 +114,10 @@ let filter = (\f l -> if null? l then [] else if f (head l) then (head l):(filte
 let fold = (\f acc l -> if null? l then acc else fold f (f acc (head l)) (tail l)) in ...
 ```
 
+### Function Application
+
+Application is as simple as `foo bar`, where foo is a Closure value and bar is a value of the proper type.
+
 ## <a name="let"></a>Let Statements
 
 Let statements follow the form `let foo = bar in baz`, where `foo` is some identifier and `bar` and `baz` are expressions. The identifier given in the let statement does not have to be used within either expression (you can have "useless" lets).
@@ -119,3 +125,49 @@ Let statements follow the form `let foo = bar in baz`, where `foo` is some ident
 ### Polymorphic Types
 
 Beyond their convenience, let statements also serve another purpose. They are the only way to implement polymorphism in StatholScript. When a let statement is typechecked, the first identifier is made into a polymorphic type which is then instantiated individually each time it appears in an expression.
+
+### Equivalence
+
+The equivalence operator (`==`) does not differentiate between normal expressions and identifiers in a let statement. It does not, therefore, automatically return true if given the same identifier twice.   
+
+So while `let x = 1 in x==x` returns true, `let f = (\x -> x) in f==f` does not.
+
+## The Interpreter
+
+The interpreter packaged with StatholScript is designed to provide useful information and to catch errors in an expressive, non-fatal way (i.e. without crashing). After being given a valid expression, the interpreter will return the value of that expression and, in the next prompt line, will also return the type of that expression. For example:
+
+```
+$ ./lang
+>> 1
+1.
+{ Num }>> true
+true
+{ Bool }>> [1,1]
+[1.,1.,]
+{ [Num] }>>
+```
+
+If the interpreter catches an error in the expression, it will try to return an expressive error. For instance:
+
+```
+$ ./lang
+>> 1==true
+Num ?= Bool
+Typecheck error: Bad constraints
+```
+
+The line `Num ?= Bool` means that the typechecker tried to validate a constraint which would have required a Num value and a Bool value to be of the same type. 
+
+## Exceptions
+
+One of the goals when making StatholScript was to create a language/interpreter which would never suffer a fatal error. This is achieved by having two different types of errors: those picked up by the interpreter and those picked up by the driver.
+
+Interpreter errors are for errors which cannot be picked up by the lexer, parser, or typechecker. These are errors that only arise because //certain// values were used. For example, both `head []` and `3/0` will produce interpreter errors. These errors will always contain the phrase `Error In Value`.
+
+Driver errors are errors that are caught before the interpreter even has a chance to begin running. There are a number of these errors:
+  * **Lexer Error**: This is raised when the lexer finds a phrase that it cannot recognize; this is normally due to misplaced spaces or bad variable names. It will return `Unrecognized token error`.
+  * **Parse Error**: This is raised when the parser is given an invalid statement using only tokens that were recognized by the lexer. It will return `Parse error in statement`.
+  * **Typecheck Error**: This is raised when the typechecker finds something which it is not supposed to allow through. There are several types of typecheck errors, each with their own return statement.
+  * **Desugarer Error**: This is raised when the desugarer finds a phrase that exists in the surface language but not in the core. It is included in this list for completeness's sake, but should never actually be raised.
+  * **Self-Referential Error**: StatholScript does not allow an expression to use itself within its own definition (this is why recursive functions require let statements). If such an expression is found, it will raise a `Self-referential error`.
+  * **Other Error**: Just in case an error was missed, the interpreter also has a "blanket" catch. If this happens, it will raise `You've encountered an unexpected error.` If you find this error, the maintainer of this repository would be very interested to hear what expression you used to get it.
