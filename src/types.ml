@@ -18,7 +18,6 @@ type resultS = NumS of float
              | SndS of resultS
              | HeadS of resultS
              | TailS of resultS
-             | NullS of resultS
              | ConsS of resultS * resultS
              | EqualS of resultS * resultS
              | NotS of resultS
@@ -39,7 +38,6 @@ type resultC = NumC of float
              | SndC of resultC
              | HeadC of resultC
              | TailC of resultC
-             | NullC of resultC
              | ConsC of resultC * resultC
              | EqualC of resultC * resultC
              | NotC of resultC
@@ -103,8 +101,7 @@ let rec freeVars env r = match r with
   | FstC x  
   | SndC x
   | HeadC x
-  | TailC x
-  | NullC x       -> freeVars env x
+  | TailC x       -> freeVars env x
   | ConsC (x,xs)  -> freeVars env x @ freeVars env xs
   | EqualC (l,r)  -> freeVars env l @ freeVars env r
   | _             -> []
@@ -137,7 +134,6 @@ let rec desugar expr = match expr with
   | SndS x        -> SndC (desugar x)
   | HeadS x       -> HeadC (desugar x)
   | TailS x       -> TailC (desugar x)
-  | NullS x       -> NullC (desugar x)
   | ConsS (l,r)   -> ConsC (desugar l,desugar r)
   | EqualS (l,r)  -> EqualC (desugar l,desugar r)
   | NotS x        -> NotC (desugar x)
@@ -235,10 +231,6 @@ let rec interp env r = match r with
                       | List []     -> List []
                       | List (_::x) -> List x
                       | _           -> Error "tail not given a list")
-  | NullC x       -> (match interp env x with
-                      | List []     -> Bool true
-                      | List _      -> Bool false
-                      | _           -> Error "null? not given a list")
   | ConsC (x,xs)  -> (match (interp env x,interp env xs) with
                       | (v,List vs) -> List (v::vs)
                       | _           -> Error "cons given invalid input")
@@ -383,9 +375,6 @@ let rec constrgen' ng env expr = match expr with
   | TailC xs          -> let nt = newc ()
                          in let (l1,t1) = constrgen' ng env xs
                          in ((t1,ListT nt)::l1,ListT nt)
-  | NullC xs          -> let nt = newc ()
-                         in let (l1,t1) = constrgen' ng env xs
-                         in ((t1,ListT nt)::l1,BoolT)
   | ConsC (x,xs)      -> let (l1,t1) = constrgen' ng env x
                          in let (l2,t2) = constrgen' ng env xs
                          in ((t2,ListT t1)::(List.append l1 l2),t2)

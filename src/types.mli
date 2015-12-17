@@ -18,7 +18,6 @@ type resultS = NumS of float
              | SndS of resultS
              | HeadS of resultS
              | TailS of resultS
-             | NullS of resultS
              | ConsS of resultS * resultS
              | EqualS of resultS * resultS
              | NotS of resultS
@@ -39,7 +38,6 @@ type resultC = NumC of float
              | SndC of resultC
              | HeadC of resultC
              | TailC of resultC
-             | NullC of resultC
              | ConsC of resultC * resultC
              | EqualC of resultC * resultC
              | NotC of resultC
