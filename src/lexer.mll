@@ -10,6 +10,7 @@ let frac = '.' digit+
 let exp = ['e' 'E'] sign? digit+
 let white = [' ' '\t']+ | "\\\n" | "//" ([^ '\n' '\r'])*
 let newline = '\n' | '\r' | "\r\n"
+let semicolon = ';'
 let letter = ['a'-'z' 'A'-'Z']
 let alphanum = letter | digit
 let lparen = '('
@@ -48,7 +49,8 @@ let any = _
 
 rule token = parse
   | white       { token lexbuf }
-  | newline     { EOL }
+  | newline     { token lexbuf }
+  | semicolon   { EOL }
   | float as x  { FLOAT (float_of_string x) }
   | bool as x   { BOOL (bool_of_string x) }
   | minus       { MINUS }
