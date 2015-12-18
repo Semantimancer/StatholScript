@@ -28,6 +28,7 @@ type token =
   | RBRACK
   | COMMA
   | MINUS
+  | SEQUENCE
 
 val main :
   (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Types.resultS

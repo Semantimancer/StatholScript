@@ -34,6 +34,7 @@
 %token SEQUENCE
 %nonassoc LET
 %nonassoc IN
+%left SEQUENCE
 %left AOP BOP COP
 %left EQUALITY
 %left IF THEN ELSE
@@ -44,7 +45,6 @@
 %nonassoc FLOAT BOOL NULL
 %nonassoc MINUS
 %nonassoc APP
-%nonassoc SEQUENCE
 %start main
 %type <Types.resultS> main
 %%
