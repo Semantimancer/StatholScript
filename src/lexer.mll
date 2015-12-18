@@ -26,6 +26,7 @@ let float = (digit+ '.'? | digit* frac) exp?
 let bool = "true" | "false"
 
 let arrow = "->"
+let sequence = "|>"
 let minus = '-'
 let equal = '='
 let equal' = "=="
@@ -68,6 +69,7 @@ rule token = parse
   | thenS       { THEN }
   | elseS       { ELSE }
   | arrow       { ARROW }
+  | sequence    { SEQUENCE }
   | lambda      { LAMBDA }
   | lparen      { LPAREN }
   | rparen      { RPAREN }
