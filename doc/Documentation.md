@@ -116,7 +116,12 @@ let fold = (\f acc l -> if null? l then acc else fold f (f acc (head l)) (tail l
 
 ### Function Application
 
-Application is as simple as `foo bar`, where foo is a Closure value and bar is a value of the proper type.
+Application is as simple as `foo bar`, where foo is a Closure value and bar is a value of the proper type. There is, however, a sequence operator.
+
+<dl>
+  <dt>( |> )</dt>
+  <dd>The sequence operator takes expressions of type <code>foo |> bar</code> and applies <code>bar</code> to the output of <code>foo</code>. This is a left-associative infix operator. For example, <code>fst (1,2) |> (\x -> x+1) |> (\x -> x+1)</code> returns 3.</dd>
+</dl>
 
 ## <a name="let"></a>Let Statements
 
@@ -138,11 +143,11 @@ The interpreter packaged with StatholScript is designed to provide useful inform
 
 ```
 $ ./lang
->> 1
+>> 1;
 1.
-{ Num }>> true
+{ Num }>> true;
 true
-{ Bool }>> [1,1]
+{ Bool }>> [1,1];
 [1.,1.,]
 { [Num] }>>
 ```
@@ -151,12 +156,16 @@ If the interpreter catches an error in the expression, it will try to return an 
 
 ```
 $ ./lang
->> 1==true
+>> 1==true;
 Num ?= Bool
 Typecheck error: Bad constraints
 ```
 
 The line `Num ?= Bool` means that the typechecker tried to validate a constraint which would have required a Num value and a Bool value to be of the same type. 
+
+### Line Breaks
+
+StatholScript requires a semicolon after every line. The interpreter reads line breaks the same way it reads whitespace (i.e. it ignores it), so you can spread your expression out across multiple lines without any trouble as long as you remember to end it with a `;`.
 
 ## Exceptions
 
