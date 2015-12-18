@@ -447,12 +447,3 @@ let typecheck r = let (cons,ty) = constrgen r in typecheck' (unify cons) ty
 (* evaluate : resultS -> val *)
 let evaluate exprS = let exprC = desugar exprS 
                      in let _ = typecheck exprC in interp [] exprC
-
-(* 
-
-  TODO:
-    * application ($) and piping (|>)
-
-  PROBLEMS:
-    * let f p = fst p + snd p in f (true,true) TYPECHECKS
-*)

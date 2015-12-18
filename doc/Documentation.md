@@ -120,7 +120,7 @@ Application is as simple as `foo bar`, where foo is a Closure value and bar is a
 
 <dl>
   <dt>( |> )</dt>
-  <dd>The sequence operator takes expressions of type <code>foo |> bar</code> and applies <code>bar</code> to the output of <code>foo</code>. This is a left-associative infix operator. For example, <code>fst (1,2) |> (\x -> x+1) |> (\x -> x+1)</code> returns 3.</dd>
+  <dd>The sequence operator takes expressions of type <code>foo |> bar</code> and applies <code>bar</code> to the output of <code>foo</code>. This is a left-associative infix operator. For example, <code>fst (1,2) |> (\x -> x+1) |> (\x -> x+1);</code> returns 3.</dd>
 </dl>
 
 ## <a name="let"></a>Let Statements
@@ -135,7 +135,7 @@ Beyond their convenience, let statements also serve another purpose. They are th
 
 The equivalence operator (`==`) does not differentiate between normal expressions and identifiers in a let statement. It does not, therefore, automatically return true if given the same identifier twice.   
 
-So while `let x = 1 in x==x` returns true, `let f = (\x -> x) in f==f` does not.
+So while `let x = 1 in x==x;` returns true, `let f = (\x -> x) in f==f;` does not.
 
 ## The Interpreter
 
