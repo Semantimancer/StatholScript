@@ -4,7 +4,7 @@
 
 StatholScript has two primitive values: Num and Bool. 
 
-Nums are stored as floats, and can be expressed as either normally (e.g. `1`, `1.`, or `1.0`) or through exponential notation (e.g. `1e0` or `1E0`). Exponential notation does allow for negative exponents, but does not allow for spaces: so `1e-2` is valid, but `1e -2` is not. Negative numbers can be expressed, but must be enclosed by parentheses for sanity reasons.
+Nums are stored as floats, and can be expressed either normally (e.g. `1`, `1.`, or `1.0`) or through exponential notation (e.g. `1e0` or `1E0`). Exponential notation does allow for negative exponents, but does not allow for spaces: so `1e-2` is valid, but `1e -2` is not. Negative numbers can be expressed, but must be enclosed by parentheses for sanity reasons.
 
 Bools are `true` and `false`.
 
@@ -37,7 +37,7 @@ If statements take the form `if foo then bar else baz`. Both the then and else b
 
 ## Pairs
 
-Pairs are tuples of the form `(foo,bar)`, which is also how they are expressed by the typechecker. The two elements in a list do not have to be the same type. More advanced forms (triples, quadruples, etc) are not natively supported; but they can be emulated with nesting tuples.
+Pairs are tuples of the form `(foo,bar)`, which is also how they are expressed by the typechecker. The two elements do not have to be the same type. More advanced forms (triples, quadruples, etc) are not natively supported, but they can be emulated with nested tuples.
 
 <dl>
   <dt>fst</dt>
@@ -47,9 +47,7 @@ Pairs are tuples of the form `(foo,bar)`, which is also how they are expressed b
   <dd>Returns the second element of a pair. Right-associative.</dd>
 
   <dt>( == )</dt>
-  <dd>Two pairs are equivalent if their first elements are equivalent and their second elements are equivalent.   
-
-  For other uses of <code>==</code>, see that section of the documentation.
+  <dd>Two pairs are equivalent if their first elements are equivalent and their second elements are equivalent. For other uses of <code>==</code>, see that section of the documentation.
 </dl>
 
 ## Lists
@@ -85,14 +83,12 @@ Function definitions on their own return a Closure value, and are expressed by t
 
 <dl>
   <dt>( == )</dt>
-  <dd>Two Closure values are never equivalent. This will always return false.
-
-  For other uses of <code>==</code>, see that section of the documentation.</dd>
+  <dd>Two Closure values are never equivalent. This will always return false, but is considered a valid use of the operator (it won't return an error). For other uses of <code>==</code>, see that section of the documentation.</dd>
 </dl>
 
 ### Typechecking Functions
 
-During typechecking, each parameter in `foo` will be given its own unique, generic type which may then be made non-generic when the second part of the function definition is checked.
+During typechecking, each parameter in `foo` will be given its own unique, generic type which may then be made non-generic when the second part of the function definition is checked. When output, generic types are given as `a1`, `a2`, `a3`, and so on.
 
 ### Partial Application
 
@@ -104,7 +100,7 @@ Lambda functions are not inherently given a name, and therefore cannot be used r
 
 #### Higher Order Functions
 
-Higher order functions can be implemented in StatholScript using let statements. For example:
+Higher order functions can be implemented using let statements. For example:
 
 ```
 let map = (\f l -> if null? l then [] else (f (head l)):(map f (tail l))) in ...
@@ -116,7 +112,7 @@ let fold = (\f acc l -> if null? l then acc else fold f (f acc (head l)) (tail l
 
 ### Function Application
 
-Application is as simple as `foo bar`, where foo is a Closure value and bar is a value of the proper type. There is, however, a sequence operator.
+Application is as simple as `foo bar`, where foo is a Closure value and bar is a value of the proper type. There is also a sequence operator.
 
 <dl>
   <dt>( |> )</dt>
@@ -135,7 +131,7 @@ Beyond their convenience, let statements also serve another purpose. They are th
 
 The equivalence operator (`==`) does not differentiate between normal expressions and identifiers in a let statement. It does not, therefore, automatically return true if given the same identifier twice.   
 
-So while `let x = 1 in x==x;` returns true, `let f = (\x -> x) in f==f;` does not.
+So while `let x = 1 in x==x;` returns true, `let f = (\x -> x) in f==f;` does not (because Closure values are never equivalent).
 
 ## The Interpreter
 
@@ -171,7 +167,7 @@ StatholScript requires a semicolon after every line. The interpreter reads line 
 
 One of the goals when making StatholScript was to create a language/interpreter which would never suffer a fatal error. This is achieved by having two different types of errors: those picked up by the interpreter and those picked up by the driver.
 
-Interpreter errors are for errors which cannot be picked up by the lexer, parser, or typechecker. These are errors that only arise because //certain// values were used. For example, both `head []` and `3/0` will produce interpreter errors. These errors will always contain the phrase `Error In Value`.
+Interpreter errors are for errors which cannot be picked up by the lexer, parser, or typechecker. These are errors that only arise because **certain** values were used. For example, both `head []` and `3/0` will produce interpreter errors, because both expressions typecheck but neither can return anything valid. These errors will always contain the phrase `Error In Value`.
 
 Driver errors are errors that are caught before the interpreter even has a chance to begin running. There are a number of these errors:
   * **Lexer Error**: This is raised when the lexer finds a phrase that it cannot recognize; this is normally due to misplaced spaces or bad variable names. It will return `Unrecognized token error`.
