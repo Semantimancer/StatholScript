@@ -7,9 +7,10 @@ let _ =
       flush stdout;
       try 
         let result = Parser.main Lexer.token lexbuf in
-          printVal stdout @@ evaluate result; print_newline();
-          output_string stdout "{ "; printTy stdout @@ typecheck (desugar result);
-          output_string stdout " }"
+          output_string stdout @@ valToString @@ evaluate result; print_newline();
+          output_string stdout "{";
+          output_string stdout @@ tyToString @@ typecheck (desugar result);
+          output_string stdout "}"
       with
         | Parsing.Parse_error       -> output_string stdout "Parse error in statement";
                                        print_newline();

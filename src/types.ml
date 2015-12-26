@@ -62,28 +62,30 @@ type ty = NumT
 
 type exprCT = resultC * ty
 
-let rec printVal ch r = match r with
-  | Num i           -> output_string ch (string_of_float i)
-  | Bool b          -> output_string ch (string_of_bool b)
-  | Closure (e, x)  -> output_string ch "Closure"
-  | Delay r         -> output_string ch "Delayed value"
-  | Pair (l,r)      -> output_string ch "("; printVal ch l; output_string ch ",";
-                       printVal ch r; output_string ch ")"
-  | List xs         -> output_string ch "[";
-                       List.iter (fun x -> printVal ch x; output_string ch ",") xs;
-                       output_string ch "]"
-  | Error s         -> output_string ch ("Error In Value: "^s)
+let rec valToString r = match r with
+  | Num i           -> string_of_float i
+  | Bool b          -> string_of_bool b
+  | Closure (e, x)  -> "Closure"
+  | Delay r         -> "Delayed value"
+  | Pair (l,r)      -> "("^(valToString l)^","^(valToString r)^")" 
+  | List xs         -> (match xs with
+                        | []      -> "[]"
+                        | x::[]   -> "["^(valToString x)^"]"
+                        | xs      -> let xs' = List.rev xs 
+                                     in "["^(List.fold_right 
+                                              (fun x acc -> (valToString x)^","^acc)
+                                              (List.tl xs') (valToString @@ List.hd xs'))
+                                        ^"]")
+  | Error s         -> "Error In Value: "^s
 
-let rec printTy ch r = match r with
-  | NumT          -> output_string ch "Num"
-  | BoolT         -> output_string ch "Bool"
-  | ArrowT (a,b)  -> output_string ch "(";printTy ch a;output_string ch " -> ";
-                     printTy ch b;output_string ch ")"
-  | VarT i        -> output_string ch ("a"^(string_of_int i))
-  | ParT (l,r)    -> output_string ch "("; printTy ch l; output_string ch ",";
-                     printTy ch r; output_string ch ")"
-  | ListT t       -> output_string ch "["; printTy ch t; output_string ch "]"
-  | PolyT (_,_)   -> output_string ch "Polymorphic Type"
+let rec tyToString r = match r with
+  | NumT          -> "Num"
+  | BoolT         -> "Bool"
+  | ArrowT (a,b)  -> "("^(tyToString a)^" -> "^(tyToString b)^")"
+  | VarT i        -> "a"^(string_of_int i)
+  | ParT (l,r)    -> "("^(tyToString l)^","^(tyToString r)^")"
+  | ListT t       -> "["^(tyToString t)^"]"
+  | PolyT (_,_)   -> "Polymorphic Type"
 
 (* freeVars : string list -> resultC -> string list *)
 let rec freeVars env r = match r with
@@ -138,21 +140,10 @@ let rec desugar expr = match expr with
   | EqualS (l,r)  -> EqualC (desugar l,desugar r)
   | NotS x        -> NotC (desugar x)
 
-(* toString : value -> string *)
-let rec toString v = match v with
-  | Num i           -> string_of_float i
-  | Bool b          -> string_of_bool b
-  | Closure (e, r)  -> List.fold_left (fun acc (st, vl) -> "("^st^", "^(toString vl)^")") 
-                                                                "" e
-  | Delay r         -> "Delayed value"
-  | Pair (l,r)      -> "("^(toString l)^","^(toString r)^")"
-  | List xs         -> "List"
-  | Error s         -> "Error In Value: "^s
-
 (* envToString : value env -> string *)
 let rec envToString env = match env with
   | []      -> "[]"
-  | x::xs   -> "("^(fst x)^", "^(toString (snd x))^") :: "^(envToString xs)
+  | x::xs   -> "("^(fst x)^", "^(valToString (snd x))^") :: "^(envToString xs)
 
 (* isEqual : val -> val -> boolean *)
 let rec isEqual l r = match (l,r) with
@@ -206,8 +197,7 @@ let rec interp env r = match r with
                       | Closure (e2,FunC (Some n,fp,ff)) -> interp ((n,fv)::(fp,pv)::e2) ff 
                       | Closure (e2,FunC (None,fp,ff))   -> interp ((fp,pv)::e2) ff
                       | Error x                          -> Error x
-                      | x                                -> (printVal stdout x;
-                                                            Error "Not given a closure."))
+                      | x                                -> Error "Not given a closure.")
   | LetC (s,x,y)  -> let r = ref None in
                      let env' = (s,Delay r)::env in
                      let fv = interp env' x in
@@ -423,8 +413,9 @@ let rec unify ls = match ls with
   | (VarT i,x)::tl | (x,VarT i)::tl   -> if contains i x 
                                          then raise Self_referential
                                          else (VarT i,x) :: unify (substList i x tl)
-  | (x,y)::_                          -> printTy stdout x; output_string stdout " ?= ";
-                                         printTy stdout y;
+  | (x,y)::_                          -> output_string stdout (tyToString x); 
+                                         output_string stdout " ?= ";
+                                         output_string stdout (tyToString y); 
                                          raise (Typecheck_failed "Bad constraints")
 
 (* typecheck' : (ty * ty) list -> ty -> ty *)
@@ -435,11 +426,12 @@ let rec typecheck' ts ty = match ty with
   | ParT (l,r)    -> ParT (typecheck' ts l,typecheck' ts r)
   | VarT i        -> List.fold_left 
                       (fun acc (x,y) -> 
-                        (match x with
-                          | VarT j  -> if j==i then typecheck' ts y else acc
-                          | _       -> acc)) (VarT i) ts
+                        (match (x,y) with
+                          | (VarT j,q)
+                          | (q,VarT j)  -> if j==i then typecheck' ts q else acc
+                          | _           -> acc)) ty ts
   | ListT t       -> ListT (typecheck' ts t) 
-  | PolyT _       -> raise (Typecheck_failed "PolyT type")
+  | PolyT _       -> raise (Typecheck_failed "PolyT type not allowed")
 
 (* typecheck : resultC -> ty *)
 let typecheck r = let (cons,ty) = constrgen r in typecheck' (unify cons) ty

@@ -62,17 +62,15 @@ type ty = NumT
 
 type exprCT = resultC * ty
 
-val printVal : out_channel -> value -> unit
+val valToString : value -> string
 
-val printTy : out_channel -> ty -> unit
+val tyToString : ty -> string
 
 val freeVars : string list -> resultC -> string list
 
 val lookup : string -> 'a env -> 'a option
 
 val desugar : resultS -> resultC
-
-val toString : value -> string
 
 val envToString : value env -> string
 
