@@ -5,6 +5,9 @@ true==true; //Basic
 false==false; //Basic
 (true==false)==false; //Basic
 (false==true)==false; //Basic
+'a'=='a'; //Basic
+'1'=='1'; //Basic
+('a'=='b')==false //Basic
 1>0; //Basic
 1>=0; //Basic
 1>=1; //Basic

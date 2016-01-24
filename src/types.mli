@@ -4,6 +4,7 @@ exception Self_referential
 
 type resultS = NumS of float
              | BoolS of bool
+             | CharS of char
              | AopS of char * resultS * resultS
              | BopS of string * resultS * resultS
              | CopS of string * resultS * resultS
@@ -24,6 +25,7 @@ type resultS = NumS of float
 
 type resultC = NumC of float
              | BoolC of bool
+             | CharC of char
              | AopC of char * resultC * resultC
              | BopC of string * resultC * resultC
              | CopC of string * resultC * resultC
@@ -46,6 +48,7 @@ type 'a env = (string * 'a) list
 
 type value = Num of float
            | Bool of bool
+           | Char of char
            | Closure of value env * resultC
            | Delay of value option ref
            | Pair of value * value
@@ -54,6 +57,7 @@ type value = Num of float
 
 type ty = NumT
         | BoolT
+        | CharT
         | ArrowT of ty * ty
         | VarT of int
         | ParT of ty * ty

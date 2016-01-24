@@ -4,6 +4,7 @@
 
 %token <float> FLOAT
 %token <bool> BOOL
+%token <char> CHAR
 %token <char> AOP
 %token <string> BOP
 %token <string> COP
@@ -42,7 +43,7 @@
 %nonassoc LPAREN LBRACK
 %nonassoc COMMA
 %nonassoc ID
-%nonassoc FLOAT BOOL NULL
+%nonassoc FLOAT BOOL CHAR NULL
 %nonassoc MINUS
 %nonassoc APP
 %start main
@@ -61,6 +62,7 @@ headEx:
 expr:
   | FLOAT                           { NumS $1 }
   | BOOL                            { BoolS $1 }
+  | CHAR                            { CharS $1 }
   | expr AOP expr                   { AopS ($2,$1,$3) } 
   | expr BOP expr                   { BopS ($2,$1,$3) }
   | expr COP expr                   { CopS ($2,$1,$3) }

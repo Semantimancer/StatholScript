@@ -1,4 +1,6 @@
 1==true; //Basic
+1=='1'; //Basic
+'t'==true //Basic
 (\f -> (f 0,f true)) (\x -> x); //The id function isn't polymorphic, so this doesn't work
 let f = (\p -> p+1) in f true; //Even though f is polymorphic, true+1 doesn't work
 let x = (\f -> f x) in x (\i -> i); //Self-referential functions are automatically stopped

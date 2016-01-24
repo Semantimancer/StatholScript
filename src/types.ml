@@ -4,6 +4,7 @@ exception Self_referential
 
 type resultS = NumS of float
              | BoolS of bool
+             | CharS of char
              | AopS of char * resultS * resultS
              | BopS of string * resultS * resultS
              | CopS of string * resultS * resultS
@@ -24,6 +25,7 @@ type resultS = NumS of float
 
 type resultC = NumC of float
              | BoolC of bool
+             | CharC of char
              | AopC of char * resultC * resultC
              | BopC of string * resultC * resultC
              | CopC of string * resultC * resultC
@@ -46,6 +48,7 @@ type 'a env = (string * 'a) list
 
 type value = Num of float
            | Bool of bool
+           | Char of char
            | Closure of value env * resultC
            | Delay of value option ref
            | Pair of value * value
@@ -54,6 +57,7 @@ type value = Num of float
 
 type ty = NumT
         | BoolT
+        | CharT
         | ArrowT of ty * ty
         | VarT of int
         | ParT of ty * ty
@@ -65,6 +69,7 @@ type exprCT = resultC * ty
 let rec valToString r = match r with
   | Num i           -> string_of_float i
   | Bool b          -> string_of_bool b
+  | Char c          -> String.make 1 c
   | Closure (e, x)  -> "Closure"
   | Delay r         -> "Delayed value"
   | Pair (l,r)      -> "("^(valToString l)^","^(valToString r)^")" 
@@ -81,6 +86,7 @@ let rec valToString r = match r with
 let rec tyToString r = match r with
   | NumT          -> "Num"
   | BoolT         -> "Bool"
+  | CharT         -> "Char"
   | ArrowT (a,b)  -> "("^(tyToString a)^" -> "^(tyToString b)^")"
   | VarT i        -> "a"^(string_of_int i)
   | ParT (l,r)    -> "("^(tyToString l)^","^(tyToString r)^")"
@@ -117,6 +123,7 @@ let rec lookup str env = match env with
 let rec desugar expr = match expr with
   | NumS i        -> NumC i
   | BoolS b       -> BoolC b
+  | CharS c       -> CharC c
   | AopS (c,l,r)  -> AopC (c,desugar l,desugar r)
   | BopS (s,l,r)  -> BopC (s,desugar l,desugar r)
   | CopS (s,l,r)  -> CopC (s,desugar l,desugar r)
@@ -149,6 +156,7 @@ let rec envToString env = match env with
 let rec isEqual l r = match (l,r) with
   | (Num x,Num y)               -> x=y
   | (Bool x,Bool y)             -> x=y
+  | (Char x,Char y)             -> x=y
   | (Pair (x,y),Pair (a,b))     -> (isEqual x a)&&(isEqual y b)
   | (List [],List [])           -> true
   | (List (x::xs),List (y::ys)) -> (isEqual x y)&&(isEqual (List xs) (List ys))
@@ -158,6 +166,7 @@ let rec isEqual l r = match (l,r) with
 let rec interp env r = match r with
   | NumC i        -> Num i
   | BoolC b       -> Bool b
+  | CharC c       -> Char c
                    (* I'm assuming that OCAML will only check snd if fst succeeds *)
   | AopC (c,l,r)  -> (match (c,interp env l,interp env r) with
                       | ('+',Num lv,Num rv) -> Num (lv +. rv)
@@ -263,8 +272,10 @@ let rec extendGenerics' ng cons = match cons with
   | []                      -> ng
   | (NumT,x)::tl 
   | (x,NumT)::tl
-  | (BoolT, x)::tl 
-  | (x,BoolT)::tl           -> extendGenerics' (addNonDup (getVars x) ng) tl
+  | (BoolT,x)::tl 
+  | (x,BoolT)::tl           
+  | (CharT,x)::tl
+  | (x,CharT)::tl           -> extendGenerics' (addNonDup (getVars x) ng) tl
   | (VarT i,VarT j)::tl     -> if List.mem (VarT i) ng
                                then extendGenerics' (addNonDup [VarT j] ng) tl
                                else if List.mem (VarT j) ng
@@ -302,6 +313,7 @@ let rec handlePoly ty = match getUnresolved ty with
 let rec constrgen' ng env expr = match expr with
   | NumC i            -> ([],NumT)
   | BoolC b           -> ([],BoolT)
+  | CharC c           -> ([],CharT)
   | AopC (c,l,r)      -> let (l1,t1) = constrgen' ng env l
                          in let (l2,t2) = constrgen' ng env r
                          in (((t1,NumT) :: (t2,NumT) :: (List.append l1 l2)),NumT)
@@ -382,7 +394,9 @@ let rec contains i t = match t with
   | ArrowT (l,r)
   | ParT (l,r)    -> (contains i l)||(contains i r)
   | VarT j        -> i==j
-  | NumT | BoolT  -> false
+  | NumT 
+  | BoolT  
+  | CharT         -> false
   | ListT t       -> contains i t
   | PolyT (is,ty) -> contains i ty
 
@@ -401,8 +415,9 @@ let substList i x ls = List.map (subst2 i x) ls
 (* unify : (ty * ty) list -> (ty * ty) list *)
 let rec unify ls = match ls with
   | []                                -> []
-  | (NumT,NumT)::tl                   -> unify tl
-  | (BoolT,BoolT)::tl                 -> unify tl
+  | (NumT,NumT)::tl
+  | (BoolT,BoolT)::tl
+  | (CharT,CharT)::tl                 -> unify tl
   | (ArrowT (l,r),ArrowT (x,y))::tl
   | (ParT (l,r),ParT (x,y))::tl       -> unify ((l,x) :: (r,y) :: tl)
   | (ListT xs,ListT ys)::tl           -> unify ((xs,ys) :: tl)
@@ -422,6 +437,7 @@ let rec unify ls = match ls with
 let rec typecheck' ts ty = match ty with
   | NumT          -> NumT
   | BoolT         -> BoolT
+  | CharT         -> CharT
   | ArrowT (a,b)  -> ArrowT (typecheck' ts a,typecheck' ts b)
   | ParT (l,r)    -> ParT (typecheck' ts l,typecheck' ts r)
   | VarT i        -> List.fold_left 

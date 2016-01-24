@@ -4,6 +4,7 @@
   exception Unrecognized
 }
 
+let any = _
 let digit = ['0'-'9']
 let sign = ['+' '-']
 let frac = '.' digit+
@@ -22,9 +23,9 @@ let aOp = '+' | '*' | '/'
 let bOp = "&&" | "||"
 let cOp = ">" | "<" | "=>" | "<=" | ">=" | "=<"
 
-(* Remove the -, do all that *)
 let float = (digit+ '.'? | digit* frac) exp?
 let bool = "true" | "false"
+let char = ''' any '''
 
 let arrow = "->"
 let sequence = "|>"
@@ -45,7 +46,6 @@ let tail = "tail"
 let cons = ":"
 let null = "null?"
 let id = letter alphanum*
-let any = _
 
 rule token = parse
   | white       { token lexbuf }
@@ -53,6 +53,7 @@ rule token = parse
   | semicolon   { EOL }
   | float as x  { FLOAT (float_of_string x) }
   | bool as x   { BOOL (bool_of_string x) }
+  | char as x   { CHAR (String.get x 1) }
   | minus       { MINUS }
   | aOp as x    { AOP x }
   | bOp as x    { BOP x }

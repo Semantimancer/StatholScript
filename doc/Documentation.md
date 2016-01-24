@@ -2,11 +2,13 @@
 
 ## Primitives
 
-StatholScript has two primitive values: Num and Bool. 
+StatholScript has four primitive values: Num, Bool, Character, and Null.
 
 Nums are stored as floats, and can be expressed either normally (e.g. `1`, `1.`, or `1.0`) or through exponential notation (e.g. `1e0` or `1E0`). Exponential notation does allow for negative exponents, but does not allow for spaces: so `1e-2` is valid, but `1e -2` is not. Negative numbers can be expressed, but must be enclosed by parentheses for sanity reasons.
 
 Bools are `true` and `false`.
+
+Characters are any single character, enclosed in single-quotes. At this time, it does not allow for using the backslash as an escape, so '\n' will return an error.
 
 ### Primitive Operators
 

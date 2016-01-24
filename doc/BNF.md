@@ -2,7 +2,7 @@
 
       <head-exp> ::= <expr> | "let" <id> "=" <head-exp> "in" <head-exp>
 
-          <expr> ::= <float> | <bool> | <expr> <aop> <expr> | <expr> <bop> <expr>
+          <expr> ::= <float> | <bool> | <char> | <expr> <aop> <expr> | <expr> <bop> <expr>
                    | <expr> <cop> <expr> | <expr> "-" <expr> | "(" "-" <expr> ")"
                    | <expr> "==" <expr> | "head" <expr> | "tail" <expr> | "null?" <expr>
                    | <not> <expr> | <expr> ":" <expr> | "(" <head-exp> "," <head-exp> ")"
@@ -27,6 +27,8 @@
           <bool> ::= "true" | "false"
 
          <float> ::= <num> | <num> <exp>
+
+          <char> ::= "'" <character> "'"
 
            <exp> ::= "e" <digits> | "E" <digits> | "e-" <digits> | "E-" <digits>
 
